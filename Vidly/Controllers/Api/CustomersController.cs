@@ -22,32 +22,32 @@ namespace Vidly.Controllers.Api
 
         // GET api/Customers
         [HttpGet]
-        public IEnumerable<CustomerDto> GetCustomers()
+        public IHttpActionResult GetCustomers()
         {
-            return _context.Customers.ToList().Select(Mapper.Map<CustomerDto>);
+            return Ok(_context.Customers.ToList().Select(Mapper.Map<CustomerDto>));
         }
 
         // GET api/<Customers>/5
         [HttpGet]
-        public CustomerDto GetCustomer(int id)
+        public IHttpActionResult GetCustomer(int id)
         {
-            var customer = _context.Customers.Include(c=>c.MembershipType).SingleOrDefault(x => x.Id == id);
+            var customer = _context.Customers.SingleOrDefault(x => x.Id == id);
             if(customer==null)
-                throw new HttpResponseException(HttpStatusCode.NotFound);
-            return Mapper.Map<CustomerDto>(customer);
+                return NotFound();
+            return Ok(Mapper.Map<CustomerDto>(customer));
         }
 
         // POST api/<Customers>
         [HttpPost]
-        public CustomerDto CreateCustomer(CustomerDto customerDto)
+        public IHttpActionResult CreateCustomer(CustomerDto customerDto)
         {
             if (!ModelState.IsValid)
-                throw new HttpResponseException(HttpStatusCode.BadRequest);
+                return BadRequest();
             var customer = Mapper.Map<Customer>(customerDto);
             _context.Customers.Add(customer);
             _context.SaveChanges();
             customerDto.Id = customer.Id;
-            return customerDto;
+            return Created(new Uri(Request.RequestUri + "/" + customer.Id), customerDto);
         }
 
         // PUT api/<Customers>/5
@@ -60,7 +60,7 @@ namespace Vidly.Controllers.Api
             if( customerInDb==null)
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             Mapper.Map(customerDto, customerInDb);            
-            _context.SaveChanges();
+            _context.SaveChanges();            
         }
 
         // DELETE api/<controller>/5
