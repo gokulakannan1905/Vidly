@@ -13,10 +13,16 @@ namespace Vidly.App_Start
         public MappingProfile()
         {
             Mapper.CreateMap<Customer, CustomerDto>();
-            Mapper.CreateMap<CustomerDto, Customer>().ForMember(c => c.Id, config => config.Ignore());
+            Mapper.CreateMap<CustomerDto, Customer>()
+                .ForMember(c => c.Id, config => config.Ignore());
+
+            Mapper.CreateMap<MembershipType, MembershipTypeDto>();
+
             Mapper.CreateMap<Movie, MovieDto>();
             Mapper.CreateMap<MovieDto, Movie>()
                 .ForMember(m=>m.Id, opt=>opt.Ignore());
+
+            Mapper.CreateMap<Genre, GenreDto>();
         }
     }
 }
